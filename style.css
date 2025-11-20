@@ -12,7 +12,9 @@
     align-items    : center;
     justify-content: space-between;
 }
-.webavat-webname {
+
+/* WEB AVATAR & WEB NAME CONTAINER > NAVBAR */
+.webavatar-webname {
     gap            : 0.6em; 
 
     width          : fit-content;
@@ -22,9 +24,10 @@
     align-items    : center;
     justify-content: center;
 }
-.webavat {
+.webavatar {
     height          : 100%;
     aspect-ratio    : 1/1;
+    max-width       : 3em;
     border          : none;
     outline         : none;
     border-radius   : var(--borderadius-circle);
@@ -39,31 +42,34 @@
 .webname {
     width      : fit-content;
     height     : fit-content;
-    font-size  : 1.2em;
+    font-size  : 1.1em;
     font-weight: var(--fontweight);
     color      : var(--fontcolor-2);
 }
-.addname-namebutton {
-    gap             : 0.2em;
 
-    width           : fit-content;
-    height          : 100%;
+/* ADD NAME & BUTTON NAME CONTAINER > NAVBAR */
+.addname-buttonname {
+    gap    : 0.2em;
+
+    width  : fit-content;
+    height : 100%;
     
-    display         : flex;
+    display: flex;
 }
 .addname {
-    padding         : 0.3em;
+    padding         : 0.6em 0.3em 0.6em 0.6em;
 
     width           : fit-content;
     height          : 100%;
     border-radius   : 2em 0 0 2em;
     background-color: var(--backgroundcolor-2);
 }
-.namebutton {
-    padding         : 0.8em;
+.buttonname {
+    padding         : 0.9em;
 
     height          : 100%;
     aspect-ratio    : 1/1;
+    max-width       : 3em;
     border          : none;
     outline         : none;
     border-radius   : 0 2em 2em 0;
@@ -74,19 +80,29 @@
     align-items     : center;
     justify-content : center;
 }
-.namebutton:hover {
+.buttonname:hover {
     background-color: var(--backgroundcolor-3);
 }
 
 /* SIDEBAR */
 .sidebar {
-    left: 0;
     width         : fit-content;
     height        : 100%;
     
     display       : flex;
     flex-direction: column;
 }
+
+/* CHAT BOX CONTAINER > SIDE BAR */
+.chat-boxcontainer {
+    width         : fit-content;
+    height        : 100%;
+    
+    display       : flex;
+    flex-direction: column;
+}
+
+/* CHAT CONTAINER > CHAT BOX CONTAINER */
 .chat-container {
     padding        : 0.6em;
     gap            : 0.6em;     
@@ -94,91 +110,67 @@
     width          : 100%;
     height         : 100%;
 
-    overflow-y     : auto;
     scroll-behavior: smooth; 
+    overflow-y     : auto; 
     display        : flex;
-    flex-direction : column;  
-    min-width      : 0;
-    word-break     : break-all;
-    overflow-wrap  : break-word;         
+    flex-direction : column;       
 }
 .chat-container::-webkit-scrollbar {width: 0;}
-.chat-container::-webkit-scrollbar-thumb {width: 0}
+.chat-container::-webkit-scrollbar-thumb {width: 0;}
 .username-chat {
-    gap          : 0.2em;
+    gap      : 0.2em;
 
-    width        : 100%;
-    max-width    : 30em;
-    height       : fit-content;
-
-    min-width    : 0;
-    word-break   : break-all;
-    overflow-wrap: break-word;
+    width    : 100%;
+    max-width: 30em;
+    height   : fit-content;
 }
-
 .chat-username {
     width      : 100%;
     height     : fit-content;
-    color      : rgb(124, 94, 207);
+    color      : rgba(102, 51, 153, 1);
     font-weight: 100; 
-
-    min-width : 0;
-    word-break: break-all;
-    overflow-wrap: break-word;
 }
-
 .chat {
-    width        : 100%;
-    height       : fit-content;
-    font-size    : 1.2em;
-    color        : var(--fontcolor-2);
-
-    min-width    : 0;
-    word-break   : break-all;
-    overflow-wrap: break-word;
+    font-size : 1.2em;
+    color     : var(--fontcolor-2);
+    word-break: break-all;
 }
 .chat a {
-    width          : 100%;
-    color          : #6cb64f;     
-    text-decoration: none;
+    color     : rgba(51, 153, 76, 1);    
+    word-break: break-all; 
 
-    cursor         : pointer;
-    pointer-events : auto;
-
-    min-width    : 0;
-    word-break   : break-all;
-    overflow-wrap: break-word;
+    cursor    : pointer;
 }
+
+/* CHAT FORM & BUTTON SEND CONTAINER > CHAT CONTAINER */
 .chatform-buttonsend {
-    bottom          : 0;
-    padding         : 0 0.6em 0.6em 0.6em;
+    bottom     : 0;
+    padding    : 0 0.6em 0.6em 0.6em;
 
-    width           : 100%;
-    height          : 3em;
+    width      : 100%;
+    height     : 3em;
 
-    display         : flex;
+    display    : flex;
+    align-items: center;
 }
 .chatform {
-    padding         : 0.4em;
+    padding         : 0.6em 0.3em 0.6em 0.6em;
     gap             : 0.4em;
 
     width           : 100%;
     height          : 100%;
-    border-radius   : 2em;
+    border-radius   : 2em 0 0 2em;
     background-color: var(--backgroundcolor-2);
-
-    display         : flex;
-    align-items     : center;
-    justify-content : center;
 }
 .buttonsend {
-    padding         : 0.5em;
+    padding         : 1em;
 
     height          : 100%;
     aspect-ratio    : 1/1;
+    max-width       : 3em;
     border          : none;
     outline         : none;
-    border-radius   : var(--borderadius-circle);
+    border-radius   : 0 2em 2em 0;
     background-color: var(--backgroundcolor-2);
 
     cursor          : pointer;
