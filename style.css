@@ -49,7 +49,6 @@
 
 /* ADD NAME & BUTTON NAME CONTAINER > NAVBAR */
 .addname-buttonname {
-    gap    : 0.2em;
 
     width  : fit-content;
     height : 100%;
@@ -57,7 +56,7 @@
     display: flex;
 }
 .addname {
-    padding         : 0.6em 0.3em 0.6em 0.6em;
+    padding         : 0.6em 0.6em 0.6em 0.8em;
 
     width           : fit-content;
     height          : 100%;
@@ -136,10 +135,11 @@
     word-break: break-all;
 }
 .chat a {
-    color     : rgba(51, 153, 76, 1);    
-    word-break: break-all; 
+    color          : rgba(51, 153, 76, 1);    
+    word-break     : break-all; 
+    text-decoration: none;
 
-    cursor    : pointer;
+    cursor         : pointer;
 }
 
 /* CHAT FORM & BUTTON SEND CONTAINER > CHAT CONTAINER */
@@ -154,7 +154,7 @@
     align-items: center;
 }
 .chatform {
-    padding         : 0.6em 0.3em 0.6em 0.6em;
+    padding         : 0.6em 0.6em 0.6em 0.8em;
     gap             : 0.4em;
 
     width           : 100%;
