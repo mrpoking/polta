@@ -1,0 +1,76 @@
+<html lang="en">
+<head>
+    <title>Polta</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"  content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="body-settings.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon"       href="webavat.png" type="image/png">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <div class="webavat-webname">
+            <button class="webavat" onclick="themeSwitch()">
+                <img src="webavat.png" class="items-fullsize">
+            </button>
+            <span class="webname">Polta</span>
+        </div>
+        <div class="addname-namebutton">
+            <div class="addname">
+                <input type="text" class="nameinput" id="nameInput" placeholder="..." autocomplete="off">
+            </div>
+            <button class="namebutton" id="nameButton">
+                <img src="send.png" class="items-fullsize">
+            </button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="chat-container" id="chatContainer"><!-- LIVE CHAT --></div>
+        <div class="chatform-buttonsend">
+            <div class="chatform">
+                <input type="text" class="chatinput" id="chatInput" placeholder="..." autocomplete="off">
+                <button class="buttonsend" onclick="sendChat()">
+                    <img src="send.png" class="items-fullsize">
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="localfunction.js"></script>
+
+    <!-- ABLY -->
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script> 
+
+    <!-- LOAD FIREBASE APP -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+
+    <!-- LOAD FIRESTORE -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+
+            // ACCESS FIREBASE SERVICES FROM THE WEB APP
+            apiKey           : "AIzaSyCvFDJ03TeR8eatlv-BqTpUmeu5ZE-YL1A",
+
+            // THE DOMAIN USED FOR AUTHENTICATION
+            authDomain       : "polta-16994.firebaseapp.com",
+
+            // THE UNIQUE ID OF THE FIREBASE PROJECT
+            projectId        : "polta-16994",
+
+            // THE CLOUD STORAGE LOCATION
+            storageBucket    : "polta-16994.firebasestorage.app",
+
+            // ID USED FOR SENDING NOTIFICATIONS
+            messagingSenderId: "429295752008",
+
+            // UNIQUE ID FOR LINKING TO FIREBASE PROJECT
+            appId            : "1:429295752008:web:314f8828c1dd26cf67197d"
+        };
+    </script>
+    <script src="client.js"></script> 
+</body>
+</html>

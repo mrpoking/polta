@@ -1,0 +1,195 @@
+/* NAVBAR */
+.navbar {
+    top            : 0;
+    padding        : 0.4em 0.6em 0.4em 0.6em;
+    gap            : 0.6em;
+
+    width          : 100%;
+    height         : 3em;
+
+    position       : fixed;
+    display        : flex;
+    align-items    : center;
+    justify-content: space-between;
+}
+.webavat-webname {
+    gap            : 0.6em; 
+
+    width          : fit-content;
+    height         : 100%;
+
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+}
+.webavat {
+    height          : 100%;
+    aspect-ratio    : 1/1;
+    border          : none;
+    outline         : none;
+    border-radius   : var(--borderadius-circle);
+    background-color: var(--backgroundcolor-2);
+
+    cursor          : pointer;
+    overflow        : hidden;
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+}
+.webname {
+    width      : fit-content;
+    height     : fit-content;
+    font-size  : 1.2em;
+    font-weight: var(--fontweight);
+    color      : var(--fontcolor-2);
+}
+.addname-namebutton {
+    gap             : 0.2em;
+
+    width           : fit-content;
+    height          : 100%;
+    
+    display         : flex;
+}
+.addname {
+    padding         : 0.3em;
+
+    width           : fit-content;
+    height          : 100%;
+    border-radius   : 2em 0 0 2em;
+    background-color: var(--backgroundcolor-2);
+}
+.namebutton {
+    padding         : 0.8em;
+
+    height          : 100%;
+    aspect-ratio    : 1/1;
+    border          : none;
+    outline         : none;
+    border-radius   : 0 2em 2em 0;
+    background-color: var(--backgroundcolor-2);
+
+    cursor          : pointer;
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+}
+.namebutton:hover {
+    background-color: var(--backgroundcolor-3);
+}
+
+/* SIDEBAR */
+.sidebar {
+    left: 0;
+    width         : fit-content;
+    height        : 100%;
+    
+    display       : flex;
+    flex-direction: column;
+}
+.chat-container {
+    padding        : 0.6em;
+    gap            : 0.6em;     
+
+    width          : 100%;
+    height         : 100%;
+
+    overflow-y     : auto;
+    scroll-behavior: smooth; 
+    display        : flex;
+    flex-direction : column;  
+    min-width      : 0;
+    word-break     : break-all;
+    overflow-wrap  : break-word;         
+}
+.chat-container::-webkit-scrollbar {width: 0;}
+.chat-container::-webkit-scrollbar-thumb {width: 0}
+.username-chat {
+    gap          : 0.2em;
+
+    width        : 100%;
+    max-width    : 30em;
+    height       : fit-content;
+
+    min-width    : 0;
+    word-break   : break-all;
+    overflow-wrap: break-word;
+}
+
+.chat-username {
+    width      : 100%;
+    height     : fit-content;
+    color      : rgb(124, 94, 207);
+    font-weight: 100; 
+
+    min-width : 0;
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+.chat {
+    width        : 100%;
+    height       : fit-content;
+    font-size    : 1.2em;
+    color        : var(--fontcolor-2);
+
+    min-width    : 0;
+    word-break   : break-all;
+    overflow-wrap: break-word;
+}
+.chat a {
+    width          : 100%;
+    color          : #6cb64f;     
+    text-decoration: none;
+
+    cursor         : pointer;
+    pointer-events : auto;
+
+    min-width    : 0;
+    word-break   : break-all;
+    overflow-wrap: break-word;
+}
+.chatform-buttonsend {
+    bottom          : 0;
+    padding         : 0 0.6em 0.6em 0.6em;
+
+    width           : 100%;
+    height          : 3em;
+
+    display         : flex;
+}
+.chatform {
+    padding         : 0.4em;
+    gap             : 0.4em;
+
+    width           : 100%;
+    height          : 100%;
+    border-radius   : 2em;
+    background-color: var(--backgroundcolor-2);
+
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+}
+.buttonsend {
+    padding         : 0.5em;
+
+    height          : 100%;
+    aspect-ratio    : 1/1;
+    border          : none;
+    outline         : none;
+    border-radius   : var(--borderadius-circle);
+    background-color: var(--backgroundcolor-2);
+
+    cursor          : pointer;
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+
+}
+.buttonsend:hover {
+    background-color: var(--backgroundcolor-3);
+}
+
+
+
