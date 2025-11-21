@@ -26,7 +26,6 @@
 }
 .webavatar {
     height          : 100%;
-    max-height      : 2.6em;
     aspect-ratio    : 1/1;
     min-width       : 2.6em;
     max-width       : 2.6em;
@@ -51,10 +50,11 @@
 
 /* ADD NAME & BUTTON NAME CONTAINER > NAVBAR */
 .addname-buttonname {
-    width  : fit-content;
-    height : 100%;
+    width      : fit-content;
+    height     : 100%;
     
-    display: flex;
+    display    : flex;
+    align-items: center;
 }
 .addname {
     padding         : 0.6em 0.6em 0.6em 0.8em;
@@ -68,7 +68,6 @@
     padding         : 0.9em;
 
     height          : 100%;
-    max-height      : 2.6em;
     aspect-ratio    : 1/1;
     min-width       : 2.6em;
     max-width       : 2.6em;
@@ -137,13 +136,10 @@
     background-color: var(--backgroundcolor-2);
 }
 .buttonsend {
-    padding         : 1em;
+    padding         : 0.9em;
 
     height          : 100%;
-    min-width       : 2.6em;
-    max-height      : 2.6em;
     aspect-ratio    : 1/1;
-    max-width       : 2.6em;
     border          : none;
     outline         : none;
     border-radius   : 0 2em 2em 0;
@@ -158,6 +154,10 @@
 .buttonsend:hover {
     background-color: var(--backgroundcolor-3);
 }
+
+
+
+
 
 
 
