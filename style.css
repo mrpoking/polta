@@ -26,8 +26,9 @@
 }
 .webavatar {
     height          : 100%;
+    max-height      : 2.6em;
     aspect-ratio    : 1/1;
-    max-width       : 3em;
+    max-width       : 2.6em;
     border          : none;
     outline         : none;
     border-radius   : var(--borderadius-circle);
@@ -66,8 +67,9 @@
     padding         : 0.9em;
 
     height          : 100%;
+    max-height      : 2.6em;
     aspect-ratio    : 1/1;
-    max-width       : 3em;
+    max-width       : 2.6em;
     border          : none;
     outline         : none;
     border-radius   : 0 2em 2em 0;
@@ -136,8 +138,9 @@
     padding         : 1em;
 
     height          : 100%;
+    max-height      : 2.6em;
     aspect-ratio    : 1/1;
-    max-width       : 3em;
+    max-width       : 2.6em;
     border          : none;
     outline         : none;
     border-radius   : 0 2em 2em 0;
@@ -152,8 +155,6 @@
 .buttonsend:hover {
     background-color: var(--backgroundcolor-3);
 }
-
-
 
 
 
