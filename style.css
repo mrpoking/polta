@@ -126,7 +126,7 @@
 .chat-username {
     width      : 100%;
     height     : fit-content;
-    color      : rgba(102, 51, 153, 1);
+    color      : rgb(114, 75, 153);
     font-weight: 100; 
 }
 .chat {
@@ -135,9 +135,8 @@
     word-break: break-all;
 }
 .chat a {
-    color          : rgba(51, 153, 76, 1);    
+    color          : rgb(110, 189, 100);    
     word-break     : break-all; 
-    text-decoration: none;
 
     cursor         : pointer;
 }

@@ -1,18 +1,20 @@
 <html lang="en">
 <head>
+
     <title>Polta</title>
     <meta charset="UTF-8">
     <meta name="viewport"  content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="body-settings.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon"       href="webavatar.png" type="image/png">
+
 </head>
 <body>
 
     <!-- NAVBAR -->
     <div class="navbar">
         <div class="webavatar-webname">
-            <button class="webavatar" onclick="themeSwitch()">
+            <button class="webavatar" id="themeButton" onclick="themeSwitch()">
                 <img src="webavatar.png" class="items-fullsize">
             </button>
             <span class="webname">Polta</span>
@@ -21,7 +23,7 @@
             <div class="addname">
                 <input type="text" class="nameinput" id="nameInput" placeholder="..." autocomplete="off">
             </div>
-            <button class="buttonname" id="buttonname">
+            <button class="buttonname" id="buttonName">
                 <img src="send.png" class="items-fullsize">
             </button>
         </div>
@@ -39,6 +41,7 @@
             </button>
         </div>
     </div>
+
     <script src="localfunction.js"></script>
 
     <!-- ABLY -->
@@ -49,28 +52,20 @@
 
     <!-- LOAD FIRESTORE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script>
+    <script>    
+
+        // WEB APP'S FIREBASE CONFIGURATION
         const firebaseConfig = {
-
-            // ACCESS FIREBASE SERVICES FROM THE WEB APP
-            apiKey           : "AIzaSyCvFDJ03TeR8eatlv-BqTpUmeu5ZE-YL1A",
-
-            // THE DOMAIN USED FOR AUTHENTICATION
-            authDomain       : "polta-16994.firebaseapp.com",
-
-            // THE UNIQUE ID OF THE FIREBASE PROJECT
-            projectId        : "polta-16994",
-
-            // THE CLOUD STORAGE LOCATION
-            storageBucket    : "polta-16994.firebasestorage.app",
-
-            // ID USED FOR SENDING NOTIFICATIONS
+            apiKey: "AIzaSyCvFDJ03TeR8eatlv-BqTpUmeu5ZE-YL1A",
+            authDomain: "polta-16994.firebaseapp.com",
+            projectId: "polta-16994",
+            storageBucket: "polta-16994.firebasestorage.app",
             messagingSenderId: "429295752008",
-
-            // UNIQUE ID FOR LINKING TO FIREBASE PROJECT
-            appId            : "1:429295752008:web:314f8828c1dd26cf67197d"
+            appId: "1:429295752008:web:314f8828c1dd26cf67197d"
         };
+        
     </script>
     <script src="client.js"></script> 
+
 </body>
 </html>
