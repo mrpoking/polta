@@ -380,7 +380,7 @@ function initializeApp() {
 // ---------------------------------------------------------------
 // EVENT HOOKUP
 // ---------------------------------------------------------------
-window.addchat = addchat;
+window.sendchat = addchat;
 
 document.addEventListener("DOMContentLoaded", () => {
     initializeApp();
