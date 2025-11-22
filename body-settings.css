@@ -44,33 +44,4 @@ img[src=""], img:not([src]) {display: none;}
 }
 .items-fullsize {width: 100%; height: 100%;}
 
-/* THEME SETTINGS */
-:root {
 
-    /* THEME VARIABLES */
-    --darkmode-fontcolor-1       : rgba(100, 100, 100, 1);
-    --lightmode-fontcolor-1      : rgb(255, 255, 255);
-
-    --darkmode-fontcolor-2       : rgba(200, 200, 200, 1);
-    --lightmode-fontcolor-2      : rgb(50, 50, 50);
-
-    --darkmode-backgroundcolor-1 : rgba(18, 21, 32, 1);
-    --lightmode-backgroundcolor-1: rgba(255, 255, 255, 1);
-
-    --darkmode-backgroundcolor-2 : rgba(34, 37, 48, 1);
-    --lightmode-backgroundcolor-2: rgb(255, 255, 255);
-
-    --darkmode-backgroundcolor-3 : rgba(50, 53, 64, 1);
-    --lightmode-backgroundcolor-3: rgba(255, 255, 255, 1);
-
-    --darkmode-backgroundcolor-4 : rgba(66, 69, 80, 1);
-    --lightmode-backgroundcolor-4: rgba(255, 255, 255, 1);
-
-    /* INTERMEDIATE VARIABLES > THEME VARIABLES */
-    --fontcolor-1      : var(--darkmode-fontcolor-1);
-    --fontcolor-2      : var(--darkmode-fontcolor-2);
-    --backgroundcolor-1: var(--darkmode-backgroundcolor-1);
-    --backgroundcolor-2: var(--darkmode-backgroundcolor-2);
-    --backgroundcolor-3: var(--darkmode-backgroundcolor-3);
-    --backgroundcolor-4: var(--darkmode-backgroundcolor-4);
-}
