@@ -1,107 +1,192 @@
-// ---------------------------------------------------------------
 // USERNAME
-// ---------------------------------------------------------------
+
+// Load the saved username from the browser
+// If nothing saved, username = empty string
 let username = localStorage.getItem("username") || "";
 
-// ---------------------------------------------------------------
-// CHAT LIMIT
-// ---------------------------------------------------------------
-let lastchatTime = 0;
-const CHAT_COOLDOWN = 2541; // 2.541 seconds
-const MAX_WORDS = 100;
-const MAX_CHARS = 100;
 
-// ---------------------------------------------------------------
+
+
+// CHAT LIMIT
+
+// Timestamp (ms) of last sent char - used for cooldown
+let lastchatTime = 0;
+
+// 2.541 seconds - minimum time between messages;
+const CHAT_COOLDOWN = 2541; 
+
+// Block messages over 100 words (unless it contains a link)
+const MAX_WORDS     = 100;
+
+// Block messages over 100 characters
+const MAX_CHARS     = 100;
+
+
+
+
 // DOM ELEMENTS
-// ---------------------------------------------------------------
+
+// Get HTML elements
 const chatContainer = document.getElementById('chatContainer');
 const chatInput     = document.getElementById('chatInput');
 const chatButton    = document.getElementById('chatButton');
 const nameInput     = document.getElementById("nameInput");
 const buttonName    = document.getElementById("buttonName");
+
+// loadedKeys tracks messages already loaded -> prevents duplicates
 const loadedKeys    = new Set();
 
-// ---------------------------------------------------------------
-// ABLY INIT
-// ---------------------------------------------------------------
-const ABLY_API_KEY = "FMzwfA.bBJkxA:6oMEcHlLzda4NJ5qqcaMmk049tLWjg6SlpMpnL_IHH0";
-const ably    = new Ably.Realtime({ key: ABLY_API_KEY });
-const channel = ably.channels.get("wassup-developers");
 
-// ---------------------------------------------------------------
+
+
+// ABLY INIT
+
+// Connect to ably real-time server
+const ABLY_API_KEY = "FMzwfA.bBJkxA:6oMEcHlLzda4NJ5qqcaMmk049tLWjg6SlpMpnL_IHH0";
+
+// Join the channel named "wassup-developers"
+const ably         = new Ably.Realtime({ key: ABLY_API_KEY });
+
+// Used for live instant chat updates
+const channel      = ably.channels.get("wassup-developers");
+
+
+
+
 // FIREBASE INIT
-// ---------------------------------------------------------------
+
+// Connect to firebase
 firebase.initializeApp(firebaseConfig);
+
+// Access firestore database
 const db              = firebase.firestore();
+
+// achievement-chats -> chat messages storage
 const chatCollection  = db.collection("achievement-chats");
+
+// users -> stores username history + restrictions
 const usersCollection = db.collection("users");
 
-// ---------------------------------------------------------------
+
+
+
 // CHAT DISABLED
-// ---------------------------------------------------------------
+
+// Function ro enable/disable chat UI
 function setChatDisabled(isDisabled) {
+
+    // Disable/enable the chat input
     chatInput.disabled = isDisabled;
+
+    // Disable/enable the chat button if it exists
     if (chatButton) chatButton.disabled = isDisabled;
 
-    chatInput.placeholder = isDisabled ? "Invalid To Chat" : "Aa";
+    // Change placeholder text depending on state
+    chatInput.placeholder = isDisabled 
+        ? "Invalid To Chat" 
+        : "Aa";
 }
 
-// ---------------------------------------------------------------
+
+
+
 // INITIALIZE USERNAME INPUT
-// ---------------------------------------------------------------
+
+// Set up name input UI depending on whether username exists
 function initializeNameInput() {
+
+    // If a username was loaded earlier
     if (username) {
+
+        // Show the username as placeholder
         nameInput.placeholder = username;
+
+        // Clear the input value
         nameInput.value = "";
+
+        // Enable chat
         setChatDisabled(false);
+
     } else {
+
+        // Prompt user to type a name
         nameInput.placeholder = "Type Your Name";
+
+        // Disable chat until they set a name
         setChatDisabled(true);
     }
+
+    // Attach saveUsername function to the button click
     buttonName.onclick = saveUsername;
 }
 
-// ---------------------------------------------------------------
+
+
+
 // SAVE USERNAME
-// ---------------------------------------------------------------
+
+// Async function that validates and saves username to Firestore and localstorage
 async function saveUsername() {
+
+    // Read and trim the name input
     const input = nameInput.value.trim();
+
+    // If empty after triming, do nothing
     if (!input) return;
 
+    // Regex: only A-Z or a-z (no spaces or number)
     const validUsernameRegex = /^[A-Za-z]+$/;
+
+    // If not match, do nothing (reject invalid characters)
     if (!validUsernameRegex.test(input)) return;
 
+    // Normalize whitespaces (keeps single spaces) and trim edges
     const cleanName = input.replace(/\s+/g, " ").trim();
 
+    // Reject names shorter than 6 chars
     if (cleanName.length < 6)  return alert("Too Short");
+
+    // Reject names longer than 20 chars
     if (cleanName.length > 20) return alert("Too Long");
 
+    // Save current username to possibly delete old record
     const oldUsername = username;
+
+    // Current time in ms
     const now     = Date.now();
-    const oneWeek = 30 * 24 * 60 * 60 * 1000;
+
+    // 30 days name change times limit
+    const oneMonth = 30 * 24 * 60 * 60 * 1000;
 
     try {
+        
+        // If same as current username, do nothing
         if (cleanName === username) return;
 
-        // LOAD HISTORY
+        // Retrieve old username doc (if exists)
         const userDoc = await usersCollection.doc(oldUsername).get();
+
+        // Get change timestamps array or empty
         let changes = userDoc.exists ? (userDoc.data().changes || []) : [];
 
-        // MAX 2 CHANGES PER MONTH
-        const recentChanges = changes.filter(t => now - t < oneWeek);
+        // Keep changes within last "30 days"
+        const recentChanges = changes.filter(t => now - t < oneMonth);
+
+        // If >= 2 recent changes, deny changes
         if (recentChanges.length >= 2) {
             return alert("2 Name Changes/Month");
         }
 
-        // ADD NEW TIMESTAMP
+        // Record this change as a timestamps
         recentChanges.push(now);
 
-        // SAVE NEW NAME
+        // Create/update doc for new username with creation and changes
         await usersCollection.doc(cleanName).set({
             createdAt: firebase.firestore.Timestamp.fromMillis(now),
             changes: recentChanges
         });
 
+        // Try delete old username doc; ignore errors
         if (oldUsername) {
             await usersCollection.doc(oldUsername).delete().catch(() => {});
         }
@@ -186,7 +271,7 @@ function createChatElement({ id, content, username }) {
         e.preventDefault();
         const url = target.href;
 
-        if (!confirm(`You Are Leaving Polta To Visit\n${url}`)) return;
+        if (!confirm(`Visit\n${url}`)) return;
         window.open(url);
     });
 
