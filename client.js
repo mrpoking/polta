@@ -1,80 +1,39 @@
 // USERNAME
-
-// Load the saved username from the browser
-// If nothing saved, username = empty string
 let username = localStorage.getItem("username") || "";
 
 // CHAT LIMIT
-
-// Timestamp (ms) of last sent char - used for cooldown
 let lastchatTime = 0;
-
-// 2.541 seconds - minimum time between messages
 const CHAT_COOLDOWN = 2541; 
-
-// Block messages over 100 words (unless it contains a link)
-const MAX_WORDS     = 100;
-
-// Block messages over 100 characters
-const MAX_CHARS     = 100;
-
-// loadedKeys tracks messages already loaded -> prevents duplicates
-const loadedKeys    = new Set();
+const MAX_WORDS = 100;
+const MAX_CHARS = 100;
+const loadedKeys = new Set();
 
 // ABLY INIT
-
-// Connect to ably real-time server
 const ABLY_API_KEY = "FMzwfA.bBJkxA:6oMEcHlLzda4NJ5qqcaMmk049tLWjg6SlpMpnL_IHH0";
-
-// Join the channel named "wassup-developers"
-const ably         = new Ably.Realtime({ key: ABLY_API_KEY });
-
-// Used for live instant chat updates
-const channel      = ably.channels.get("wassup-developers");
+const ably = new Ably.Realtime({ key: ABLY_API_KEY });
+const channel = ably.channels.get("wassup-developers");
 
 // FIREBASE INIT
-
-// Connect to firebase
 firebase.initializeApp(firebaseConfig);
-
-// Access firestore database
-const db              = firebase.firestore();
-
-// achievement-chats -> chat messages storage
-const chatCollection  = db.collection("achievement-chats");
-
-// users -> stores username history
+const db = firebase.firestore();
+const chatCollection = db.collection("achievement-chats");
 const usersCollection = db.collection("users");
 
-// ---------------------------------------------------------------
-// DOM & EVENT HOOKUP (run after DOM loaded)
-// ---------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
 
-    // DOM ELEMENTS
     const chatContainer = document.getElementById('chatContainer');
-    const chatInput     = document.getElementById('chatInput');
-    const chatButton    = document.getElementById('chatButton');
-    const nameInput     = document.getElementById("nameInput");
-    const buttonName    = document.getElementById("buttonName");
+    const chatInput = document.getElementById('chatInput');
+    const nameInput = document.getElementById("nameInput");
+    const buttonName = document.getElementById("buttonName");
 
-    // ---------------------------------------------------------------
-    // CHAT DISABLED
-    // ---------------------------------------------------------------
     function setChatDisabled(isDisabled) {
         chatInput.disabled = isDisabled;
-        if (chatButton) chatButton.disabled = isDisabled;
         chatInput.placeholder = isDisabled ? "Invalid To Chat" : "Aa";
     }
 
-    // ---------------------------------------------------------------
-    // INITIALIZE USERNAME INPUT
-    // ---------------------------------------------------------------
     function initializeNameInput() {
-
         if (!nameInput || !buttonName) return;
 
-        // If a username was loaded earlier
         if (username) {
             nameInput.placeholder = username;
             nameInput.value = "";
@@ -85,28 +44,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         buttonName.addEventListener("click", saveUsername);
-
-        // Optional: press Enter to submit username
         nameInput.addEventListener("keydown", (e) => {
             if (e.key === "Enter") saveUsername();
         });
     }
 
-    // ---------------------------------------------------------------
-    // SAVE USERNAME (ALLOW VIETNAMESE LETTERS, NO TIME LIMIT)
-    // ---------------------------------------------------------------
     async function saveUsername() {
-
         const input = nameInput.value.trim();
         if (!input) return;
 
-        // Allow letters including Vietnamese, with optional single spaces
-        const validUsernameRegex = /^[\p{L}]+( [\p{L}]+)*$/u;
+        const validUsernameRegex = /^[\p{L}]+( [\p{L}]+)*$/u; // letters + Vietnamese
         if (!validUsernameRegex.test(input)) return alert("Invalid Name");
 
         const cleanName = input.replace(/\s+/g, " ").trim();
-
-        if (cleanName.length < 6)  return alert("Too Short");
+        if (cleanName.length < 6) return alert("Too Short");
         if (cleanName.length > 20) return alert("Too Long");
 
         try {
@@ -130,9 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ---------------------------------------------------------------
-    // CHAT INPUT LIMIT
-    // ---------------------------------------------------------------
     chatInput.addEventListener("input", () => {
         if (chatInput.disabled) return;
 
@@ -141,20 +89,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const hasLink = urlRegex.test(content);
 
         if (!hasLink) {
-            if (content.length > MAX_CHARS)
-                content = content.slice(0, MAX_CHARS);
-
+            if (content.length > MAX_CHARS) content = content.slice(0, MAX_CHARS);
             const words = content.trim().split(/\s+/);
-            if (words.length > MAX_WORDS)
-                content = words.slice(0, MAX_WORDS).join(" ");
+            if (words.length > MAX_WORDS) content = words.slice(0, MAX_WORDS).join(" ");
         }
 
         chatInput.value = content;
     });
 
-    // ---------------------------------------------------------------
-    // ESCAPE HTML
-    // ---------------------------------------------------------------
     function escapeHTML(str) {
         return str.replace(/[&<>"']/g, (m) => ({
             "&": "&amp;",
@@ -165,12 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }[m]));
     }
 
-    // ---------------------------------------------------------------
-    // CREATE CHAT ELEMENT
-    // ---------------------------------------------------------------
     function createChatElement({ id, content, username }) {
-        if (!id) return null;
-        if (document.getElementById(`chat-${id}`)) return null;
+        if (!id || document.getElementById(`chat-${id}`)) return null;
 
         const wrapper = document.createElement("div");
         wrapper.classList.add("username-chat");
@@ -192,25 +130,19 @@ document.addEventListener("DOMContentLoaded", () => {
         chat.addEventListener("click", (e) => {
             const target = e.target.closest("a");
             if (!target) return;
-
             e.preventDefault();
-            const url = target.href;
-            if (!confirm(`Visit\n${url}`)) return;
-            window.open(url);
+            if (!confirm(`Visit\n${target.href}`)) return;
+            window.open(target.href);
         });
 
         wrapper.appendChild(chat);
         return wrapper;
     }
 
-    // ---------------------------------------------------------------
-    // HANDLE INCOMING CHAT
-    // ---------------------------------------------------------------
     function handleIncomingchat(data) {
         if (!data || !data.id || loadedKeys.has(data.id)) return;
 
         loadedKeys.add(data.id);
-
         const chatElement = createChatElement(data);
         if (!chatElement) return;
 
@@ -221,16 +153,10 @@ document.addEventListener("DOMContentLoaded", () => {
         while (allchats.length > 50) allchats[0].remove();
     }
 
-    // ---------------------------------------------------------------
-    // ANTI-SPAM: LONG REPEATING CHARACTERS
-    // ---------------------------------------------------------------
     function hasLongRepeatingChars(str) {
         return /(.)\1{5,}/.test(str);
     }
 
-    // ---------------------------------------------------------------
-    // ADD NEW CHAT
-    // ---------------------------------------------------------------
     async function addchat() {
         if (chatInput.disabled) {
             alert("Invalid To Chat");
@@ -270,9 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ---------------------------------------------------------------
-    // INITIALIZE APP
-    // ---------------------------------------------------------------
     function initializeApp() {
         try {
             chatCollection
@@ -282,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     snapshot.docs.forEach(doc => {
                         handleIncomingchat({
                             id: doc.id,
-                            content : doc.data().content  || "",
+                            content: doc.data().content || "",
                             username: doc.data().username || "Anonymous",
                         });
                     });
@@ -296,22 +219,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ---------------------------------------------------------------
-    // HOOKUP CHAT SEND
-    // ---------------------------------------------------------------
-    window.sendchat = addchat;
-
+    // Press Enter to send
     chatInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") addchat();
     });
 
-    if (chatButton) {
-        chatButton.addEventListener("click", addchat);
-    }
+    // Expose global function for HTML Send button
+    window.sendChat = addchat;
 
-    // Initialize UI
+    // Initialize
     initializeNameInput();
     initializeApp();
 });
-
 
