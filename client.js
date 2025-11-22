@@ -93,14 +93,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ---------------------------------------------------------------
-    // SAVE USERNAME (NO TIME LIMIT)
+    // SAVE USERNAME (ALLOW VIETNAMESE LETTERS, NO TIME LIMIT)
     // ---------------------------------------------------------------
     async function saveUsername() {
 
         const input = nameInput.value.trim();
         if (!input) return;
 
-        const validUsernameRegex = /^[A-Za-z]+( [A-Za-z]+)*$/;
+        // Allow letters including Vietnamese, with optional single spaces
+        const validUsernameRegex = /^[\p{L}]+( [\p{L}]+)*$/u;
         if (!validUsernameRegex.test(input)) return alert("Invalid Name");
 
         const cleanName = input.replace(/\s+/g, " ").trim();
@@ -308,5 +309,4 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeNameInput();
     initializeApp();
 });
-
 
