@@ -24,11 +24,15 @@
     align-items    : center;
     justify-content: center;
 }
+
+/* WEB AVATAR > WEB AVATAR & WEB NAME CONTAINER */
 .webavatar {
-    height          : 100%;
-    aspect-ratio    : 1/1;
-    min-width       : 2.6em;
-    max-width       : 2.6em;
+    min-width       : 2.7em;
+    width           : 2.7em;
+    max-width       : 2.7em;
+    min-height      : 2.7em;    
+    height          : 2.7em;
+    max-height      : 2.7em;
     border          : none;
     outline         : none;
     border-radius   : var(--borderadius-circle);
@@ -40,6 +44,8 @@
     align-items     : center;
     justify-content : center;
 }
+
+/* WEB NAME > WEB AVATAR & WEB NAME CONTAINER */
 .webname {
     width      : fit-content;
     height     : fit-content;
@@ -67,10 +73,12 @@
 .buttonname {
     padding         : 0.9em;
 
-    height          : 100%;
-    aspect-ratio    : 1/1;
-    min-width       : 2.6em;
-    max-width       : 2.6em;
+    min-width       : 2.65em;
+    width           : 2.65em;
+    max-width       : 2.65em;
+    min-height      : 2.65em;    
+    height          : 2.65em;
+    max-height      : 2.65em;
     border          : none;
     outline         : none;
     border-radius   : 0 2em 2em 0;
@@ -98,7 +106,7 @@
 
 /* CHAT CONTAINER > SIDEBAR */
 .chat-container {
-    padding       : 0.6em 0.6em 3.4em 0.6em;
+    padding       : 0.6em 0.6em 3.6em 0.6em;
     gap           : 0.6em;
 
     font-weight   : 100;
@@ -108,13 +116,15 @@
     flex-direction: column;       
     word-break    : break-all;
 }
-.chat-container::-webkit-scrollbar {width: 0;}
+.chat-container::-webkit-scrollbar       {width: 0;}
 .chat-container::-webkit-scrollbar-thumb {width: 0;}
-.chat-username {color: rgb(131, 81, 172);}
-.chat {color: var(--fontcolor-2);}
-.chat a {color: rgb(71, 190, 67);}
 
-/* CHAT FORM & BUTTON SEND CONTAINER */
+/* CHAT USERNAME > CHAT CONTAINER */
+.chat-username {color: rgb(131, 81, 172);}
+.chat          {color: var(--fontcolor-2);}
+.chat a        {color: rgb(60, 158, 57);}
+
+/* CHAT FORM & BUTTON SEND CONTAINER > SIDEBAR */
 .chatform-buttonsend {
     bottom     : 0;
     padding    : 0 0.6em 0.6em 0.6em;
@@ -126,6 +136,8 @@
     display    : flex;
     align-items: center;
 }
+
+/* CHAT FORM > CHAT FORM & BUTTON SEND CONTAINER */
 .chatform {
     padding         : 0.6em 0.6em 0.6em 0.8em;
     gap             : 0.4em;
@@ -135,8 +147,10 @@
     border-radius   : 2em 0 0 2em;
     background-color: var(--backgroundcolor-2);
 }
+
+/* BUTTON SEND > CHAT FORM & BUTTON SEND CONTAINER */
 .buttonsend {
-    padding         : 0.9em;
+    padding         : 0.95em;
 
     height          : 100%;
     aspect-ratio    : 1/1;
@@ -154,6 +168,7 @@
 .buttonsend:hover {
     background-color: var(--backgroundcolor-3);
 }
+
 
 
 
