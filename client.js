@@ -305,8 +305,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Enter") addchat();
     });
 
+    if (chatButton) {
+        chatButton.addEventListener("click", addchat);
+    }
+
     // Initialize UI
     initializeNameInput();
     initializeApp();
 });
+
 
