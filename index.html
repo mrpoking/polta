@@ -31,11 +31,7 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-
-
         <div class="chat-container" id="chatContainer"><!-- LIVE CHAT --></div>
-
-
         <div class="chatform-buttonsend">
             <div class="chatform">
                 <input type="text" class="chatinput" id="chatInput" placeholder="..." autocomplete="off">
@@ -44,23 +40,19 @@
                 <img src="send.png" class="items-fullsize">
             </button>
         </div>
-
-        
     </div>
-
-    <script src="localfunction.js"></script>
 
     <!-- ABLY -->
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script> 
 
-    <!-- LOAD FIREBASE APP -->
+    <!-- LOAD FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 
     <!-- LOAD FIRESTORE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script>    
 
-        // WEB APP'S FIREBASE CONFIGURATION
+    <!-- FIREBASE CONFIGURATION -->
+    <script>    
         const firebaseConfig = {
             apiKey: "AIzaSyCvFDJ03TeR8eatlv-BqTpUmeu5ZE-YL1A",
             authDomain: "polta-16994.firebaseapp.com",
@@ -69,9 +61,13 @@
             messagingSenderId: "429295752008",
             appId: "1:429295752008:web:314f8828c1dd26cf67197d"
         };
-        
     </script>
+
+    <!-- CLIENT.JS -->
     <script src="client.js"></script> 
+
+    <!-- LOCAL FUNCTION.JS -->
+    <script src="localfunction.js"></script>
 
 </body>
 </html>
