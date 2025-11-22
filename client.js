@@ -24,15 +24,6 @@ const MAX_CHARS     = 100;
 
 
 
-// DOM ELEMENTS
-
-// Get HTML elements
-const chatContainer = document.getElementById('chatContainer');
-const chatInput     = document.getElementById('chatInput');
-const chatButton    = document.getElementById('chatButton');
-const nameInput     = document.getElementById("nameInput");
-const buttonName    = document.getElementById("buttonName");
-
 // loadedKeys tracks messages already loaded -> prevents duplicates
 const loadedKeys    = new Set();
 
@@ -70,326 +61,321 @@ const usersCollection = db.collection("users");
 
 
 
-// CHAT DISABLED
+// ---------------------------------------------------------------
+// DOM & EVENT HOOKUP (run after DOM loaded)
+// ---------------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
 
-// Function ro enable/disable chat UI
-function setChatDisabled(isDisabled) {
+    // DOM ELEMENTS
+    const chatContainer = document.getElementById('chatContainer');
+    const chatInput     = document.getElementById('chatInput');
+    const chatButton    = document.getElementById('chatButton');
+    const nameInput     = document.getElementById("nameInput");
+    const buttonName    = document.getElementById("buttonName");
 
-    // Disable/enable the chat input
-    chatInput.disabled = isDisabled;
-
-    // Disable/enable the chat button if it exists
-    if (chatButton) chatButton.disabled = isDisabled;
-
-    // Change placeholder text depending on state
-    chatInput.placeholder = isDisabled 
-        ? "Invalid To Chat" 
-        : "Aa";
-}
-
-
-
-
-// INITIALIZE USERNAME INPUT
-
-// Set up name input UI depending on whether username exists
-function initializeNameInput() {
-
-    // Check elements exist
-    if (!nameInput || !buttonName) return;
-
-    // If a username was loaded earlier
-    if (username) {
-
-        // Show the username as placeholder
-        nameInput.placeholder = username;
-
-        // Clear the input value
-        nameInput.value = "";
-
-        // Enable chat
-        setChatDisabled(false);
-
-    } else {
-
-        // Prompt user to type a name
-        nameInput.placeholder = "Type Your Name";
-
-        // Disable chat until they set a name
-        setChatDisabled(true);
+    // ---------------------------------------------------------------
+    // CHAT DISABLED
+    // ---------------------------------------------------------------
+    function setChatDisabled(isDisabled) {
+        chatInput.disabled = isDisabled;
+        if (chatButton) chatButton.disabled = isDisabled;
+        chatInput.placeholder = isDisabled ? "Invalid To Chat" : "Aa";
     }
 
-    // Attach saveUsername function to the button click
-    // Fixed: now guaranteed to exist before assigning
-    buttonName.onclick = saveUsername;
-}
+    // ---------------------------------------------------------------
+    // INITIALIZE USERNAME INPUT
+    // ---------------------------------------------------------------
+    function initializeNameInput() {
 
+        if (!nameInput || !buttonName) return;
 
+        // If a username was loaded earlier
+        if (username) {
 
+            // Show the username as placeholder
+            nameInput.placeholder = username;
 
-// SAVE USERNAME
+            // Clear the input value
+            nameInput.value = "";
 
-// Async function that validates and saves username to Firestore and localstorage
-async function saveUsername() {
+            // Enable chat
+            setChatDisabled(false);
 
-    // Read and trim the name input
-    const input = nameInput.value.trim();
+        } else {
 
-    // If empty after triming, do nothing
-    if (!input) return;
+            // Prompt user to type a name
+            nameInput.placeholder = "Type Your Name";
 
-    // Regex: only A-Z or a-z (no spaces or number)
-    const validUsernameRegex = /^[A-Za-z]+$/;
-
-    // If not match, do nothing (reject invalid characters)
-    if (!validUsernameRegex.test(input)) return;
-
-    // Normalize whitespaces (keeps single spaces) and trim edges
-    const cleanName = input.replace(/\s+/g, " ").trim();
-
-    // Reject names shorter than 6 chars
-    if (cleanName.length < 6)  return alert("Too Short");
-
-    // Reject names longer than 20 chars
-    if (cleanName.length > 20) return alert("Too Long");
-
-    // Save current username to possibly delete old record
-    const oldUsername = username;
-
-    // Current time in ms
-    const now     = Date.now();
-
-    // 30 days name change times limit
-    const oneMonth = 30 * 24 * 60 * 60 * 1000;
-
-    try {
-        
-        // If same as current username, do nothing
-        if (cleanName === username) return;
-
-        // Retrieve old username doc (if exists)
-        const userDoc = await usersCollection.doc(oldUsername).get();
-
-        // Get change timestamps array or empty
-        let changes = userDoc.exists ? (userDoc.data().changes || []) : [];
-
-        // Keep changes within last "30 days"
-        const recentChanges = changes.filter(t => now - t < oneMonth);
-
-        // If >= 2 recent changes, deny changes
-        if (recentChanges.length >= 2) {
-            return alert("2 Name Changes/Month");
+            // Disable chat until they set a name
+            setChatDisabled(true);
         }
 
-        // Record this change as a timestamps
-        recentChanges.push(now);
+        // Attach saveUsername function to the button click
+        buttonName.addEventListener("click", saveUsername);
 
-        // Create/update doc for new username with creation and changes
-        await usersCollection.doc(cleanName).set({
-            createdAt: firebase.firestore.Timestamp.fromMillis(now),
-            changes: recentChanges
+        // Optional: press Enter to submit username
+        nameInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") saveUsername();
         });
-
-        // Try delete old username doc; ignore errors
-        if (oldUsername) {
-            await usersCollection.doc(oldUsername).delete().catch(() => {});
-        }
-
-        username = cleanName;
-        localStorage.setItem("username", username);
-        nameInput.placeholder = username;
-        nameInput.value = "";
-        setChatDisabled(false);
-
-        alert(`${username}`);
-
-    } catch (err) {
-        console.error(err);
-        alert("Error Saving Username");
-    }
-}
-
-// ---------------------------------------------------------------
-// CHAT INPUT LIMIT
-// ---------------------------------------------------------------
-chatInput.addEventListener("input", () => {
-    if (chatInput.disabled) return;
-
-    let content = chatInput.value;
-    const urlRegex = /(https?:\/\/[^\s]+)/;
-    const hasLink = urlRegex.test(content);
-
-    if (!hasLink) {
-        if (content.length > MAX_CHARS)
-            content = content.slice(0, MAX_CHARS);
-
-        const words = content.trim().split(/\s+/);
-        if (words.length > MAX_WORDS)
-            content = words.slice(0, MAX_WORDS).join(" ");
     }
 
-    chatInput.value = content;
-});
+    // ---------------------------------------------------------------
+    // SAVE USERNAME
+    // ---------------------------------------------------------------
+    async function saveUsername() {
 
-// ---------------------------------------------------------------
-// ESCAPE HTML
-// ---------------------------------------------------------------
-function escapeHTML(str) {
-    return str.replace(/[&<>"']/g, (m) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    }[m]));
-}
+        // Read and trim the name input
+        const input = nameInput.value.trim();
 
-// ---------------------------------------------------------------
-// CREATE CHAT ELEMENT
-// ---------------------------------------------------------------
-function createChatElement({ id, content, username }) {
-    if (!id) return null;
-    if (document.getElementById(`chat-${id}`)) return null;
+        // If empty after trimming, do nothing
+        if (!input) return;
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("username-chat");
-    wrapper.id = `chat-${id}`;
+        // Regex: only A-Z or a-z (no spaces or number)
+        const validUsernameRegex = /^[A-Za-z]+$/;
 
-    const chat = document.createElement("div");
-    chat.classList.add("chat");
+        // If not match, do nothing (reject invalid characters)
+        if (!validUsernameRegex.test(input)) return;
 
-    const safeContent = escapeHTML(content).replace(
-        /(https?:\/\/[^\s]+)/g,
-        `<a href="$&" target="_blank">$&</a>`
-    );
+        // Normalize whitespaces (keeps single spaces) and trim edges
+        const cleanName = input.replace(/\s+/g, " ").trim();
 
-    chat.innerHTML = `
-        <strong class="chat-username">${escapeHTML(username)}</strong>:
-        <span class="chat-message">${safeContent}</span>
-    `;
+        // Reject names shorter than 6 chars
+        if (cleanName.length < 6)  return alert("Too Short");
 
-    chat.addEventListener("click", (e) => {
-        const target = e.target.closest("a");
-        if (!target) return;
+        // Reject names longer than 20 chars
+        if (cleanName.length > 20) return alert("Too Long");
 
-        e.preventDefault();
-        const url = target.href;
+        // Save current username to possibly delete old record
+        const oldUsername = username;
 
-        if (!confirm(`Visit\n${url}`)) return;
-        window.open(url);
-    });
+        // Current time in ms
+        const now     = Date.now();
 
-    wrapper.appendChild(chat);
-    return wrapper;
-}
+        // 30 days name change times limit
+        const oneMonth = 30 * 24 * 60 * 60 * 1000;
 
-// ---------------------------------------------------------------
-// HANDLE INCOMING CHAT
-// ---------------------------------------------------------------
-function handleIncomingchat(data) {
-    if (!data || !data.id || loadedKeys.has(data.id)) return;
+        try {
 
-    loadedKeys.add(data.id);
+            // If same as current username, do nothing
+            if (cleanName === username) return;
 
-    const chatElement = createChatElement(data);
-    if (!chatElement) return;
+            // Retrieve old username doc (if exists)
+            const userDoc = await usersCollection.doc(oldUsername).get();
 
-    chatContainer.appendChild(chatElement);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+            // Get change timestamps array or empty
+            let changes = userDoc.exists ? (userDoc.data().changes || []) : [];
 
-    const allchats = chatContainer.getElementsByClassName("username-chat");
-    while (allchats.length > 50) allchats[0].remove();
-}
+            // Keep changes within last "30 days"
+            const recentChanges = changes.filter(t => now - t < oneMonth);
 
-// ---------------------------------------------------------------
-// ANTI-SPAM: LONG REPEATING CHARACTERS
-// ---------------------------------------------------------------
-function hasLongRepeatingChars(str) {
-    // Detect if any character repeats 6+ times
-    return /(.)\1{5,}/.test(str);
-}
+            // If >= 2 recent changes, deny changes
+            if (recentChanges.length >= 2) {
+                return alert("2 Name Changes/Month");
+            }
 
-// ---------------------------------------------------------------
-// ADD NEW CHAT
-// ---------------------------------------------------------------
-async function addchat() {
-    if (chatInput.disabled) {
-        alert("Invalid To Chat");
-        return;
-    }
+            // Record this change as a timestamp
+            recentChanges.push(now);
 
-    const now = Date.now();
-    if (now - lastchatTime < CHAT_COOLDOWN) return;
-    lastchatTime = now;
-
-    const content = chatInput.value.trim();
-    if (!content) return;
-
-    // PREVENT SPAM: long repeated characters
-    if (hasLongRepeatingChars(content)) {
-        alert("Message contains repeated characters");
-        return;
-    }
-
-    chatInput.value = "";
-
-    const chatData = {
-        content,
-        username: username || "Anonymous",
-        time: firebase.firestore.Timestamp.fromMillis(Date.now())
-    };
-
-    try {
-        const docRef = await chatCollection.add(chatData);
-
-        channel.publish("new-achievement", {
-            id: docRef.id,
-            content,
-            username: username || "Anonymous"
-        });
-    } catch (err) {
-        console.error("Chating Failed:", err);
-    }
-}
-
-// ---------------------------------------------------------------
-// INITIALIZE APP
-// ---------------------------------------------------------------
-function initializeApp() {
-    try {
-        chatCollection
-            .orderBy("time", "asc")
-            .limitToLast(50)
-            .onSnapshot(snapshot => {
-                snapshot.docs.forEach(doc => {
-                    handleIncomingchat({
-                        id: doc.id,
-                        content : doc.data().content  || "",
-                        username: doc.data().username || "Anonymous",
-                    });
-                });
+            // Create/update doc for new username with creation and changes
+            await usersCollection.doc(cleanName).set({
+                createdAt: firebase.firestore.Timestamp.fromMillis(now),
+                changes: recentChanges
             });
 
-        channel.subscribe("new-achievement", (msg) =>
-            handleIncomingchat(msg.data)
+            // Try delete old username doc; ignore errors
+            if (oldUsername) {
+                await usersCollection.doc(oldUsername).delete().catch(() => {});
+            }
+
+            username = cleanName;
+            localStorage.setItem("username", username);
+            nameInput.placeholder = username;
+            nameInput.value = "";
+            setChatDisabled(false);
+
+            alert(`${username}`);
+
+        } catch (err) {
+            console.error(err);
+            alert("Error Saving Username");
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // CHAT INPUT LIMIT
+    // ---------------------------------------------------------------
+    chatInput.addEventListener("input", () => {
+        if (chatInput.disabled) return;
+
+        let content = chatInput.value;
+        const urlRegex = /(https?:\/\/[^\s]+)/;
+        const hasLink = urlRegex.test(content);
+
+        if (!hasLink) {
+            if (content.length > MAX_CHARS)
+                content = content.slice(0, MAX_CHARS);
+
+            const words = content.trim().split(/\s+/);
+            if (words.length > MAX_WORDS)
+                content = words.slice(0, MAX_WORDS).join(" ");
+        }
+
+        chatInput.value = content;
+    });
+
+    // ---------------------------------------------------------------
+    // ESCAPE HTML
+    // ---------------------------------------------------------------
+    function escapeHTML(str) {
+        return str.replace(/[&<>"']/g, (m) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[m]));
+    }
+
+    // ---------------------------------------------------------------
+    // CREATE CHAT ELEMENT
+    // ---------------------------------------------------------------
+    function createChatElement({ id, content, username }) {
+        if (!id) return null;
+        if (document.getElementById(`chat-${id}`)) return null;
+
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("username-chat");
+        wrapper.id = `chat-${id}`;
+
+        const chat = document.createElement("div");
+        chat.classList.add("chat");
+
+        const safeContent = escapeHTML(content).replace(
+            /(https?:\/\/[^\s]+)/g,
+            `<a href="$&" target="_blank">$&</a>`
         );
 
-        // Fixed: initialize username input here after DOM is ready
-        initializeNameInput();
+        chat.innerHTML = `
+            <strong class="chat-username">${escapeHTML(username)}</strong>:
+            <span class="chat-message">${safeContent}</span>
+        `;
 
-    } catch (error) {
-        console.error("Error Initializing App:", error);
+        chat.addEventListener("click", (e) => {
+            const target = e.target.closest("a");
+            if (!target) return;
+
+            e.preventDefault();
+            const url = target.href;
+
+            if (!confirm(`Visit\n${url}`)) return;
+            window.open(url);
+        });
+
+        wrapper.appendChild(chat);
+        return wrapper;
     }
-}
 
-// ---------------------------------------------------------------
-// EVENT HOOKUP
-// ---------------------------------------------------------------
-window.sendchat = addchat;
+    // ---------------------------------------------------------------
+    // HANDLE INCOMING CHAT
+    // ---------------------------------------------------------------
+    function handleIncomingchat(data) {
+        if (!data || !data.id || loadedKeys.has(data.id)) return;
 
-document.addEventListener("DOMContentLoaded", () => {
-    initializeApp();
+        loadedKeys.add(data.id);
+
+        const chatElement = createChatElement(data);
+        if (!chatElement) return;
+
+        chatContainer.appendChild(chatElement);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        const allchats = chatContainer.getElementsByClassName("username-chat");
+        while (allchats.length > 50) allchats[0].remove();
+    }
+
+    // ---------------------------------------------------------------
+    // ANTI-SPAM: LONG REPEATING CHARACTERS
+    // ---------------------------------------------------------------
+    function hasLongRepeatingChars(str) {
+        return /(.)\1{5,}/.test(str);
+    }
+
+    // ---------------------------------------------------------------
+    // ADD NEW CHAT
+    // ---------------------------------------------------------------
+    async function addchat() {
+        if (chatInput.disabled) {
+            alert("Invalid To Chat");
+            return;
+        }
+
+        const now = Date.now();
+        if (now - lastchatTime < CHAT_COOLDOWN) return;
+        lastchatTime = now;
+
+        const content = chatInput.value.trim();
+        if (!content) return;
+
+        if (hasLongRepeatingChars(content)) {
+            alert("Message contains repeated characters");
+            return;
+        }
+
+        chatInput.value = "";
+
+        const chatData = {
+            content,
+            username: username || "Anonymous",
+            time: firebase.firestore.Timestamp.fromMillis(Date.now())
+        };
+
+        try {
+            const docRef = await chatCollection.add(chatData);
+
+            channel.publish("new-achievement", {
+                id: docRef.id,
+                content,
+                username: username || "Anonymous"
+            });
+        } catch (err) {
+            console.error("Chating Failed:", err);
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // INITIALIZE APP
+    // ---------------------------------------------------------------
+    function initializeApp() {
+        try {
+            chatCollection
+                .orderBy("time", "asc")
+                .limitToLast(50)
+                .onSnapshot(snapshot => {
+                    snapshot.docs.forEach(doc => {
+                        handleIncomingchat({
+                            id: doc.id,
+                            content : doc.data().content  || "",
+                            username: doc.data().username || "Anonymous",
+                        });
+                    });
+                });
+
+            channel.subscribe("new-achievement", (msg) =>
+                handleIncomingchat(msg.data)
+            );
+        } catch (error) {
+            console.error("Error Initializing App:", error);
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // HOOKUP CHAT SEND
+    // ---------------------------------------------------------------
+    window.sendchat = addchat;
+
     chatInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") addchat();
     });
+
 });
+
