@@ -27,12 +27,8 @@
 
 /* WEB AVATAR > WEB AVATAR & WEB NAME CONTAINER */
 .webavatar {
-    min-width       : 2.7em;
-    width           : 2.7em;
-    max-width       : 2.7em;
-    min-height      : 2.7em;    
-    height          : 2.7em;
-    max-height      : 2.7em;
+    height          : 100%;
+    aspect-ratio    : 1/1;
     border          : none;
     outline         : none;
     border-radius   : var(--borderadius-circle);
@@ -168,6 +164,8 @@
 .buttonsend:hover {
     background-color: var(--backgroundcolor-3);
 }
+
+
 
 
 
