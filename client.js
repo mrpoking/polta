@@ -4,15 +4,12 @@
 // If nothing saved, username = empty string
 let username = localStorage.getItem("username") || "";
 
-
-
-
 // CHAT LIMIT
 
 // Timestamp (ms) of last sent char - used for cooldown
 let lastchatTime = 0;
 
-// 2.541 seconds - minimum time between messages;
+// 2.541 seconds - minimum time between messages
 const CHAT_COOLDOWN = 2541; 
 
 // Block messages over 100 words (unless it contains a link)
@@ -21,14 +18,8 @@ const MAX_WORDS     = 100;
 // Block messages over 100 characters
 const MAX_CHARS     = 100;
 
-
-
-
 // loadedKeys tracks messages already loaded -> prevents duplicates
 const loadedKeys    = new Set();
-
-
-
 
 // ABLY INIT
 
@@ -41,9 +32,6 @@ const ably         = new Ably.Realtime({ key: ABLY_API_KEY });
 // Used for live instant chat updates
 const channel      = ably.channels.get("wassup-developers");
 
-
-
-
 // FIREBASE INIT
 
 // Connect to firebase
@@ -55,11 +43,8 @@ const db              = firebase.firestore();
 // achievement-chats -> chat messages storage
 const chatCollection  = db.collection("achievement-chats");
 
-// users -> stores username history + restrictions
+// users -> stores username history
 const usersCollection = db.collection("users");
-
-
-
 
 // ---------------------------------------------------------------
 // DOM & EVENT HOOKUP (run after DOM loaded)
@@ -91,26 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // If a username was loaded earlier
         if (username) {
-
-            // Show the username as placeholder
             nameInput.placeholder = username;
-
-            // Clear the input value
             nameInput.value = "";
-
-            // Enable chat
             setChatDisabled(false);
-
         } else {
-
-            // Prompt user to type a name
             nameInput.placeholder = "Type Your Name";
-
-            // Disable chat until they set a name
             setChatDisabled(true);
         }
 
-        // Attach saveUsername function to the button click
         buttonName.addEventListener("click", saveUsername);
 
         // Optional: press Enter to submit username
@@ -120,72 +93,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ---------------------------------------------------------------
-    // SAVE USERNAME
+    // SAVE USERNAME (NO TIME LIMIT)
     // ---------------------------------------------------------------
     async function saveUsername() {
 
-        // Read and trim the name input
         const input = nameInput.value.trim();
-
-        // If empty after trimming, do nothing
         if (!input) return;
 
-        // Regex: letters + optional single spaces between words
         const validUsernameRegex = /^[A-Za-z]+( [A-Za-z]+)*$/;
-
-        // If not match, do nothing (reject invalid characters)
         if (!validUsernameRegex.test(input)) return alert("Invalid Name");
 
-        // Normalize whitespaces (keeps single spaces) and trim edges
         const cleanName = input.replace(/\s+/g, " ").trim();
 
-        // Reject names shorter than 6 chars
         if (cleanName.length < 6)  return alert("Too Short");
-
-        // Reject names longer than 20 chars
         if (cleanName.length > 20) return alert("Too Long");
 
-        // Save current username to possibly delete old record
-        const oldUsername = username;
-
-        // Current time in ms
-        const now     = Date.now();
-
-        // 30 days name change times limit
-        const oneMonth = 30 * 24 * 60 * 60 * 1000;
-
         try {
-
-            // If same as current username, do nothing
             if (cleanName === username) return;
 
-            // Retrieve old username doc (if exists)
-            const userDoc = await usersCollection.doc(oldUsername).get();
-
-            // Get change timestamps array or empty
-            let changes = userDoc.exists ? (userDoc.data().changes || []) : [];
-
-            // Keep changes within last "30 days"
-            const recentChanges = changes.filter(t => now - t < oneMonth);
-
-            // If >= 2 recent changes, deny changes
-            if (recentChanges.length >= 2) {
-                return alert("2 Name Changes/Month");
-            }
-
-            // Record this change as a timestamp
-            recentChanges.push(now);
-
-            // Create/update doc for new username with creation and changes
+            const now = Date.now();
             await usersCollection.doc(cleanName).set({
-                createdAt: firebase.firestore.Timestamp.fromMillis(now),
-                changes: recentChanges
+                createdAt: firebase.firestore.Timestamp.fromMillis(now)
             });
-
-            // Try delete old username doc; ignore errors
-            if (oldUsername) {
-                await usersCollection.doc(oldUsername).delete().catch(() => {});
-            }
 
             username = cleanName;
             localStorage.setItem("username", username);
@@ -194,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
             setChatDisabled(false);
 
             alert(`${username}`);
-
         } catch (err) {
             console.error(err);
             alert("Error Saving Username");
@@ -266,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             e.preventDefault();
             const url = target.href;
-
             if (!confirm(`Visit\n${url}`)) return;
             window.open(url);
         });
@@ -380,7 +307,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize UI
     initializeNameInput();
     initializeApp();
-
 });
 
 
