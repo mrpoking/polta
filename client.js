@@ -95,6 +95,9 @@ function setChatDisabled(isDisabled) {
 // Set up name input UI depending on whether username exists
 function initializeNameInput() {
 
+    // Check elements exist
+    if (!nameInput || !buttonName) return;
+
     // If a username was loaded earlier
     if (username) {
 
@@ -117,6 +120,7 @@ function initializeNameInput() {
     }
 
     // Attach saveUsername function to the button click
+    // Fixed: now guaranteed to exist before assigning
     buttonName.onclick = saveUsername;
 }
 
@@ -370,6 +374,7 @@ function initializeApp() {
             handleIncomingchat(msg.data)
         );
 
+        // Fixed: initialize username input here after DOM is ready
         initializeNameInput();
 
     } catch (error) {
