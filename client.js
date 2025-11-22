@@ -130,11 +130,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // If empty after trimming, do nothing
         if (!input) return;
 
-        // Regex: only A-Z or a-z (no spaces or number)
-        const validUsernameRegex = /^[A-Za-z]+$/;
+        // Regex: letters + optional single spaces between words
+        const validUsernameRegex = /^[A-Za-z]+( [A-Za-z]+)*$/;
 
         // If not match, do nothing (reject invalid characters)
-        if (!validUsernameRegex.test(input)) return;
+        if (!validUsernameRegex.test(input)) return alert("Invalid Name");
 
         // Normalize whitespaces (keeps single spaces) and trim edges
         const cleanName = input.replace(/\s+/g, " ").trim();
@@ -382,4 +382,5 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeApp();
 
 });
+
 
